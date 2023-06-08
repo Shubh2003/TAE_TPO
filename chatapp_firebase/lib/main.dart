@@ -1,5 +1,6 @@
 import 'package:chatapp_firebase/pages/auth/decide_page.dart';
-import 'package:chatapp_firebase/pages/auth/student_login_page.dart';
+import 'package:chatapp_firebase/pages/auth/profile_page.dart';
+import 'package:chatapp_firebase/students/student_login_page.dart';
 import 'package:chatapp_firebase/pages/home_page.dart';
 
 import 'package:chatapp_firebase/shared/constants.dart';
@@ -61,9 +62,9 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: Colors.white
       ),
       debugShowCheckedModeBanner: false,
-      // home:  DecidePage(),
+      home:  const ProfilePage(),
       //original home
-      home: _isSignedIn ?  DecidePage(): const LoginPage(),
+      // home: _isSignedIn ?  DecidePage(): const LoginPage(),
     );
   }
 }

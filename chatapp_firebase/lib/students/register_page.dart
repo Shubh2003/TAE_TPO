@@ -1,19 +1,19 @@
 import 'package:chatapp_firebase/helper/helper_function.dart';
-import 'package:chatapp_firebase/pages/auth/student_login_page.dart';
+import 'package:chatapp_firebase/students/student_login_page.dart';
 import 'package:chatapp_firebase/pages/home_page.dart';
 import 'package:chatapp_firebase/service/auth_service.dart';
 import 'package:chatapp_firebase/widgets/widgets.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class TpoRegisterPage extends StatefulWidget {
-  const TpoRegisterPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<TpoRegisterPage> createState() => _TpoRegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _TpoRegisterPageState extends State<TpoRegisterPage> {
+class _RegisterPageState extends State<RegisterPage> {
   bool _isLoading  = false;
   final formKey = GlobalKey<FormState>();
   String email = "";
@@ -37,7 +37,7 @@ class _TpoRegisterPageState extends State<TpoRegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children:<Widget> [
                 const Text(
-                "Admin Register",
+                "Student Register",
               style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),

@@ -1,5 +1,5 @@
-import 'package:chatapp_firebase/pages/auth/TPO_login.dart';
-import 'package:chatapp_firebase/pages/auth/register_page.dart';
+import 'package:chatapp_firebase/tpo/TPO_login.dart';
+import 'package:chatapp_firebase/students/register_page.dart';
 import 'package:flutter/material.dart';
 
 class DecidePage extends StatelessWidget {

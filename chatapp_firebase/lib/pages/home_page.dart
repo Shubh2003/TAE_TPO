@@ -1,6 +1,6 @@
 import 'package:chatapp_firebase/common/slidable_card.dart';
 import 'package:chatapp_firebase/helper/helper_function.dart';
-import 'package:chatapp_firebase/pages/auth/student_login_page.dart';
+import 'package:chatapp_firebase/students/student_login_page.dart';
 import 'package:chatapp_firebase/pages/auth/search_page.dart';
 import 'package:chatapp_firebase/service/auth_service.dart';
 import 'package:chatapp_firebase/widgets/widgets.dart';

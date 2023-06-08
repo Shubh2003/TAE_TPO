@@ -1,27 +1,24 @@
-import 'package:chatapp_firebase/pages/auth/register_page.dart';
+import 'package:chatapp_firebase/helper/helper_function.dart';
+import 'package:chatapp_firebase/students/student_login_page.dart';
+import 'package:chatapp_firebase/pages/home_page.dart';
 import 'package:chatapp_firebase/service/auth_service.dart';
-import 'package:chatapp_firebase/service/database_service.dart';
 import 'package:chatapp_firebase/widgets/widgets.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../helper/helper_function.dart';
-import '../home_page.dart';
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class TpoRegisterPage extends StatefulWidget {
+  const TpoRegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<TpoRegisterPage> createState() => _TpoRegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _TpoRegisterPageState extends State<TpoRegisterPage> {
+  bool _isLoading  = false;
   final formKey = GlobalKey<FormState>();
   String email = "";
   String passwrod = "";
-  bool _isLoading = false;
+  String fullName = "";
   AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
@@ -29,10 +26,8 @@ class _LoginPageState extends State<LoginPage> {
       // appBar: AppBar(
       //   backgroundColor: Theme.of(context).primaryColor,
       // ),
-      body:_isLoading? Center(
-        child: CircularProgressIndicator(
-          color: Theme.of(context).primaryColor),
-          ): SingleChildScrollView(
+      body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
+      : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal:20,vertical: 80 ),
           child: Form(
@@ -42,23 +37,46 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children:<Widget> [
                 const Text(
-                "Student Login",
-              
-              style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold,color:Colors.black ),
+                "Admin Register",
+              style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               const Text("",
               style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400)),
               Image.asset("assets/tae.png"),
-              const SizedBox(
+              SizedBox(
                 height: 30,
               ),
               TextFormField(
                 decoration: textInputDecoration.copyWith(
+                  labelText: "Full Name",
+                  prefixIcon: Icon(
+                    Icons.person,
+                   color: Colors.black,
+                  )
+                ),
+                onChanged: (val){
+                  setState(() {
+                    fullName = val;
+                  });
+                },
+               validator: (val){
+                if(val!.isNotEmpty){
+                  return null;
+                
+                }
+                else{
+                  return "Name cannot be empty";
+                }
+               },
+              ),
+               const SizedBox(height: 15),
+              TextFormField(
+                decoration: textInputDecoration.copyWith(
                   labelText: "Email",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.email,
-                    color: Colors.black,
+                 color: Colors.black,
                   )
                 ),
                 onChanged: (val){
@@ -78,9 +96,9 @@ class _LoginPageState extends State<LoginPage> {
                   obscureText: true,
                 decoration: textInputDecoration.copyWith(
                   labelText: "Passwrod",
-                  prefixIcon: const Icon(
+                  prefixIcon: Icon(
                     Icons.lock,
-                   color: Colors.black,
+                    color: Colors.black,
                   )
                 ),
                 validator: (val){
@@ -113,27 +131,27 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 ),
                 child: const Text(
-                  "Sign In",
+                  "Register",
                   style: TextStyle(color: Colors.white,fontSize: 16),
                 ),
                 onPressed: (){
-                  login();
+                  register();
                 },
               ),
              ),
              const SizedBox(height: 10,),
              Text.rich(TextSpan(
-               text: "Don't have an account?",
+               text: "Already have an account?",
                style: const TextStyle(color: Colors.black,fontSize: 14),
                children: <TextSpan>[
                 TextSpan(
-                  text: "Register here",
+                  text: "Login now",
                   style: const TextStyle(
                     color: Colors.black,
                     decoration: TextDecoration.underline
                   ),
                   recognizer: TapGestureRecognizer()..onTap = (){
-                    nextScreen(context, const RegisterPage());
+                    nextScreen(context, const LoginPage());
                   }),
                
                ],
@@ -145,23 +163,18 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-   
   }
-  login()async{
-     if(formKey.currentState!.validate()){
+  register ()async{
+    if(formKey.currentState!.validate()){
       setState(() {
         _isLoading = true;
       });
-      await authService.loginWithUserNameandPassword( email, passwrod).then((value)async{
+      await authService.registerUserWithEmailandPassword(fullName, email, passwrod).then((value)async{
         if(value==true){
 
-        QuerySnapshot snapshot = 
-         await DatabaseService(uid:  FirebaseAuth.instance.currentUser!.uid).gettingUserData(email);
         await HelperFunctions.saveUserLoggedInStatus(true);
         await HelperFunctions.saveUserEmailSF(email);
-        await HelperFunctions.saveUserNameSF(
-          snapshot.docs[0]['fullName']
-        );
+        await HelperFunctions.saveUserNameSF(fullName);
         nextScreenReplace(context, const HomePage());
 
         }else{
@@ -173,6 +186,6 @@ class _LoginPageState extends State<LoginPage> {
       });
 
     }
+
   }
-  
 }

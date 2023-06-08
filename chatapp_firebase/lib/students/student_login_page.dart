@@ -1,5 +1,5 @@
-
-import 'package:chatapp_firebase/pages/auth/tpo_home_page.dart';
+import 'package:chatapp_firebase/pages/auth/decide_page.dart';
+import 'package:chatapp_firebase/students/register_page.dart';
 import 'package:chatapp_firebase/service/auth_service.dart';
 import 'package:chatapp_firebase/service/database_service.dart';
 import 'package:chatapp_firebase/widgets/widgets.dart';
@@ -8,18 +8,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import '../../helper/helper_function.dart';
-import '../home_page.dart';
-import 'Tpo_register_page.dart';
+import '../helper/helper_function.dart';
+import '../pages/home_page.dart';
 
-class TpoLogin extends StatefulWidget {
-  const TpoLogin({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<TpoLogin> createState() => _TpoLoginState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _TpoLoginState extends State<TpoLogin> {
+class _LoginPageState extends State<LoginPage> {
   final formKey = GlobalKey<FormState>();
   String email = "";
   String passwrod = "";
@@ -44,7 +43,7 @@ class _TpoLoginState extends State<TpoLogin> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children:<Widget> [
                 const Text(
-                "Admin Login",
+                "Student Login",
               
               style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold,color:Colors.black ),
               ),
@@ -135,7 +134,24 @@ class _TpoLoginState extends State<TpoLogin> {
                     decoration: TextDecoration.underline
                   ),
                   recognizer: TapGestureRecognizer()..onTap = (){
-                    nextScreen(context, const TpoRegisterPage());
+                    nextScreen(context, const RegisterPage());
+                  }),
+               
+               ],
+             )),
+            const SizedBox(height: 10,),
+            Text.rich(TextSpan(
+               text: "",
+               style: const TextStyle(color: Colors.black,fontSize: 14),
+               children: <TextSpan>[
+                TextSpan(
+                  text: "Decide",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    decoration: TextDecoration.underline
+                  ),
+                  recognizer: TapGestureRecognizer()..onTap = (){
+                    nextScreen(context,  DecidePage());
                   }),
                
                ],
@@ -164,7 +180,7 @@ class _TpoLoginState extends State<TpoLogin> {
         await HelperFunctions.saveUserNameSF(
           snapshot.docs[0]['fullName']
         );
-        nextScreenReplace(context, const TpoHomePage());
+        nextScreenReplace(context, const HomePage());
 
         }else{
           showSnackBar(context, Colors.red, value);

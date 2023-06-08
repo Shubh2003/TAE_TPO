@@ -1,24 +1,30 @@
-import 'package:chatapp_firebase/helper/helper_function.dart';
-import 'package:chatapp_firebase/pages/auth/student_login_page.dart';
-import 'package:chatapp_firebase/pages/home_page.dart';
+
+import 'package:chatapp_firebase/pages/auth/decide_page.dart';
+import 'package:chatapp_firebase/tpo/tpo_home_page.dart';
 import 'package:chatapp_firebase/service/auth_service.dart';
+import 'package:chatapp_firebase/service/database_service.dart';
 import 'package:chatapp_firebase/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+import '../helper/helper_function.dart';
+import '../pages/home_page.dart';
+import 'Tpo_register_page.dart';
+
+class TpoLogin extends StatefulWidget {
+  const TpoLogin({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<TpoLogin> createState() => _TpoLoginState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
-  bool _isLoading  = false;
+class _TpoLoginState extends State<TpoLogin> {
   final formKey = GlobalKey<FormState>();
   String email = "";
   String passwrod = "";
-  String fullName = "";
+  bool _isLoading = false;
   AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
@@ -26,8 +32,10 @@ class _RegisterPageState extends State<RegisterPage> {
       // appBar: AppBar(
       //   backgroundColor: Theme.of(context).primaryColor,
       // ),
-      body: _isLoading ? Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor))
-      : SingleChildScrollView(
+      body:_isLoading? Center(
+        child: CircularProgressIndicator(
+          color: Theme.of(context).primaryColor),
+          ): SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal:20,vertical: 80 ),
           child: Form(
@@ -37,46 +45,23 @@ class _RegisterPageState extends State<RegisterPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children:<Widget> [
                 const Text(
-                "Student Register",
-              style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold),
+                "Admin Login",
+              
+              style: TextStyle(fontSize: 40,fontWeight: FontWeight.bold,color:Colors.black ),
               ),
               const SizedBox(height: 10),
               const Text("",
               style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400)),
               Image.asset("assets/tae.png"),
-              SizedBox(
+              const SizedBox(
                 height: 30,
               ),
               TextFormField(
                 decoration: textInputDecoration.copyWith(
-                  labelText: "Full Name",
-                  prefixIcon: Icon(
-                    Icons.person,
-                   color: Colors.black,
-                  )
-                ),
-                onChanged: (val){
-                  setState(() {
-                    fullName = val;
-                  });
-                },
-               validator: (val){
-                if(val!.isNotEmpty){
-                  return null;
-                
-                }
-                else{
-                  return "Name cannot be empty";
-                }
-               },
-              ),
-               const SizedBox(height: 15),
-              TextFormField(
-                decoration: textInputDecoration.copyWith(
                   labelText: "Email",
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.email,
-                 color: Colors.black,
+                    color: Colors.black,
                   )
                 ),
                 onChanged: (val){
@@ -96,9 +81,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: true,
                 decoration: textInputDecoration.copyWith(
                   labelText: "Passwrod",
-                  prefixIcon: Icon(
+                  prefixIcon: const Icon(
                     Icons.lock,
-                    color: Colors.black,
+                   color: Colors.black,
                   )
                 ),
                 validator: (val){
@@ -131,27 +116,44 @@ class _RegisterPageState extends State<RegisterPage> {
                   )
                 ),
                 child: const Text(
-                  "Register",
+                  "Sign In",
                   style: TextStyle(color: Colors.white,fontSize: 16),
                 ),
                 onPressed: (){
-                  register();
+                  login();
                 },
               ),
              ),
              const SizedBox(height: 10,),
              Text.rich(TextSpan(
-               text: "Already have an account?",
+               text: "Don't have an account?",
                style: const TextStyle(color: Colors.black,fontSize: 14),
                children: <TextSpan>[
                 TextSpan(
-                  text: "Login now",
+                  text: "Register here",
                   style: const TextStyle(
                     color: Colors.black,
                     decoration: TextDecoration.underline
                   ),
                   recognizer: TapGestureRecognizer()..onTap = (){
-                    nextScreen(context, const LoginPage());
+                    nextScreen(context, const TpoRegisterPage());
+                  }),
+               
+               ],
+             )),
+              const SizedBox(height: 10,),
+            Text.rich(TextSpan(
+               text: "",
+               style: const TextStyle(color: Colors.black,fontSize: 14),
+               children: <TextSpan>[
+                TextSpan(
+                  text: "Decide",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    decoration: TextDecoration.underline
+                  ),
+                  recognizer: TapGestureRecognizer()..onTap = (){
+                    nextScreen(context,  DecidePage());
                   }),
                
                ],
@@ -163,19 +165,24 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
+   
   }
-  register ()async{
-    if(formKey.currentState!.validate()){
+  login()async{
+     if(formKey.currentState!.validate()){
       setState(() {
         _isLoading = true;
       });
-      await authService.registerUserWithEmailandPassword(fullName, email, passwrod).then((value)async{
+      await authService.loginWithUserNameandPassword( email, passwrod).then((value)async{
         if(value==true){
 
+        QuerySnapshot snapshot = 
+         await DatabaseService(uid:  FirebaseAuth.instance.currentUser!.uid).gettingUserData(email);
         await HelperFunctions.saveUserLoggedInStatus(true);
         await HelperFunctions.saveUserEmailSF(email);
-        await HelperFunctions.saveUserNameSF(fullName);
-        nextScreenReplace(context, const HomePage());
+        await HelperFunctions.saveUserNameSF(
+          snapshot.docs[0]['fullName']
+        );
+        nextScreenReplace(context, const TpoHomePage());
 
         }else{
           showSnackBar(context, Colors.red, value);
@@ -186,6 +193,6 @@ class _RegisterPageState extends State<RegisterPage> {
       });
 
     }
-
   }
+  
 }
